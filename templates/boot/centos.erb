@@ -1,0 +1,7 @@
+default <%= @c['hostname'] %>
+prompt 0
+timeout 1
+label <%= @c['hostname'] %>
+    kernel <%= @c['kernel'] %>
+    ipappend 2
+    append <%= @c['append'] %> ks=<%= install_url_for(@c['hostname']) %>

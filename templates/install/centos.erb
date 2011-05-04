@@ -1,0 +1,30 @@
+install
+url --url=<%= mirror_url_for(@c['mirror']) %>
+lang ja_JP
+keyboard jp106
+rootpw --iscrypted $1$QTovBnVu$ml/hTCZBlnNs6UkWlhuJf.
+firewall --disabled
+selinux --disabled
+authconfig --enableshadow --enablemd5
+timezone Asia/Tokyo
+bootloader --location=mbr
+text
+clearpart --all --initlabel
+part /boot --asprimary --bytes-per-inode=4096 --fstype="ext3" --size=512
+part / --bytes-per-inode=4096 --fstype="ext3" --grow --size=1
+part swap --asprimary --bytes-per-inode=4096 --fstype="swap" --size=2048
+auth  --useshadow  --enablemd5
+<%= snippet(:redhat_network) %>
+skipx
+reboot
+firstboot --disable
+logging --level=info
+%packages
+<%= snippet(:redhat_pkgs) %>
+
+%pre
+<%= snippet("report_start") %>
+%post --nochroot
+cp /tmp/networksetup.sh /mnt/sysimage/networksetup.sh
+%post --log=/mnt/sysimage/root/anaconda-post.log
+<%= snippet("report_finish") %>

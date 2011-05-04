@@ -1,0 +1,8 @@
+{
+  "kernel": "/img/Fedora14-x86_64/vmlinuz",
+  "append": "initrd=/img/Fedora14-x86_64/initrd.img sshd ksdevice=bootif lang=  kssendmac kssendsn text",
+  "install": "fedora",
+  "bootmenu": "centos",
+  "mirror": "Fedora14-x86_64"
+}
+

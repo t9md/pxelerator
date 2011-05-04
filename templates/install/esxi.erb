@@ -1,0 +1,16 @@
+# Accept the VMware End User License Agreement
+vmaccepteula
+# Set the root password for the DCUI and Tech Support Mode
+rootpw mypassword
+# Choose the first discovered disk to install onto
+autopart --firstdisk --overwritevmfs
+# The installation media is in the CD-ROM drive
+install url <%= mirror_url_for(@c['mirror']) %>
+# Set the network to DHCP on the first network adapater
+network --bootproto=dhcp --device=vmnic0
+
+# A sample post-install script
+%post --unsupported --interpreter=python --ignorefailure=true
+#import time
+#stampFile = file('/finished.stamp', mode='w')
+#stampFile.write( time.asctime() )

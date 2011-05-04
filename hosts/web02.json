@@ -1,0 +1,11 @@
+{
+  "_parent": "_fedora14",
+  "hostname": "web02",
+  "macaddr": "08:00:27:E1:90:3D",
+  "int": {
+    "bond0": { "ip": "33.33.33.102", "netmask": "255.255.255.0" },
+    "eth0": { "slave": true },
+    "eth1": { "slave": true }
+  },
+  "gateway": "33.33.33.10"
+}

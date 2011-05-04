@@ -1,0 +1,8 @@
+{
+  "kernel": "/img/CentOS56/vmlinuz",
+  "append": "initrd=/img/CentOS56/initrd.img ksdevice=bootif lang=  kssendmac text",
+  "install": "centos",
+  "bootmenu": "centos",
+  "mirror": "CentOS56"
+}
+

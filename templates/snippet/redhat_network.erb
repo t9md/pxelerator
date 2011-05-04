@@ -1,0 +1,1 @@
+network --bootproto=static --ip=<%= @c['int']['eth0']['ip'] %> --netmask=<%= @c['int']['eth0']['netmask'] %> --gateway=<%= @c['gateway'] %> --hostname=<%= @c['hostname'] %> --nameserver=33.33.33.10

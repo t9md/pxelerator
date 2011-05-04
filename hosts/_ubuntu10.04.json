@@ -1,0 +1,7 @@
+{
+  "kernel": "/img/Ubuntu10.04Server/linux",
+  "append": "initrd=/img/Ubuntu10.04Server/initrd.gz ksdevice=bootif lang= kssendmac text",
+  "install": "ubuntu",
+  "bootmenu": "ubuntu",
+  "mirror": "Ubuntu10.04Server"
+}

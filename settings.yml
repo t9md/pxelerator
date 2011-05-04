@@ -1,0 +1,7 @@
+---
+# hosts_root: "/home/t9md/dev/pxelerator/hostiis"
+api_base: "http://33.33.33.10:9393"
+mirror_url: "http://33.33.33.10/mirror"
+pxelinux_cfg_dir: "/tftpboot/pxelinux.cfg"
+mirror_dir: "/var/www/html/mirror"
+dnsmasq_conf: "/etc/dnsmasq.d/pxelerator.conf"

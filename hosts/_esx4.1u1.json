@@ -1,0 +1,7 @@
+{
+  "kernel": "/img/ESXi4.1u1/mboot.c32",
+  "append": "/img/ESXi4.1u1/vmkboot.gz --- /img/ESXi4.1u1/vmkernel.gz --- /img/ESXi4.1u1/sys.vgz --- /img/ESXi4.1u1/cim.vgz --- /img/ESXi4.1u1/ienviron.vgz --- /img/ESXi4.1u1/install.vgz",
+  "install": "esxi",
+  "bootmenu": "esxi",
+  "mirror": "ESXi4.1u1"
+}

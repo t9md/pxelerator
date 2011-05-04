@@ -1,0 +1,30 @@
+lang en_US
+langsupport en_US
+keyboard us
+mouse
+timezone America/New_York
+rootpw --iscrypted $1$Pifo.Mgj$nbVxh/jBIWy92qgv0SRDX.
+user --disabled
+reboot
+text
+install
+url --url=<%= mirror_url_for(@c['mirror']) %>
+bootloader --location=mbr 
+zerombr yes
+clearpart --all --initlabel 
+part swap --size 512 
+part / --fstype ext3 --size 1 --grow 
+auth  --useshadow  --enablemd5 
+<%= snippet(:debian_network) %>
+
+preseed --owner d-i     base-installer/kernel/override-image    string linux-server
+preseed --owner tasksel tasksel/force-tasks     string server
+firewall --disabled 
+skipx
+
+%pre
+<%= snippet("report_start") %>
+%packages
+openssh-server
+%post
+<%= snippet("report_finish") %>
