@@ -78,16 +78,22 @@ end
 
 # POST "#{API_BASE}/dhcp/ub01/lock"
 # POST "#{API_BASE}/dhcp/ub01/unlock"
+# POST "#{API_BASE}/dhcp/all/gen"
 namespace :dhcp do
   desc "lock"
   task :lock do
     required_env :host
-    GET  "#{API_BASE}/dhcp/#{env.host}/list"
+    POST  "#{API_BASE}/dhcp/#{env.host}/list"
   end
   desc "unlock"
   task :unlock do
     required_env :host
-    GET  "#{API_BASE}/dhcp/#{env.host}/json"
+    POST  "#{API_BASE}/dhcp/#{env.host}/json"
+  end
+  desc "gen"
+  task :gen do
+    # required_env :host
+    POST  "#{API_BASE}/dhcp/all/gen"
   end
 end
 

@@ -1,3 +1,4 @@
+# vim: set fdm=marker fdc=3 fdl=5:
 require "rubygems"
 gem 'sinatra', '=1.2.3'
 # gem 'rack', '=1.2.0'
@@ -12,7 +13,6 @@ __DIR__ = File.expand_path(File.dirname(__FILE__))
 $LOAD_PATH.unshift File.join([__DIR__, "lib"])
 require "dnsmasq"
 
-# Config:
 configure do # {{{
   # set :logging, 'true'
   config_file "settings.yml"
@@ -31,9 +31,11 @@ configure do # {{{
   Log.level  = Logger::INFO 
   DNSMasq::CONFIG_FILE = settings.dnsmasq_conf
 end #}}}
-
-# Helpers:
 helpers do # {{{
+  # def gen_dnsmasq_config
+    
+  # end
+
   def install_url_for(hostname, template=nil)
     query = template ? "?template=#{template}" : ""
     "#{settings.api_base}/install/#{hostname}#{query}"
@@ -41,16 +43,11 @@ helpers do # {{{
   def report_url_for(hostname, action)
     "#{settings.api_base}/report/#{hostname}/#{action}"
   end
-  def bootfile_path_for(hostname)
+  def bootmenu_path_for(hostname)
     "#{settings.pxelinux_cfg_dir}/01-#{mac_normalize(hosts_config[hostname]['macaddr'])}"
   end
   def mirror_url_for(dirname)
     "#{settings.mirror_url}/#{dirname}"
-  end
-  def gen_pxeboot_menu(opt)
-    @c = opt
-    template = File.join(settings.template_root, "boot/#{opt['bootmenu']}.erb")
-    return ERB.new(File.read(template), nil, '-').result(binding)
   end
   def find_template(views, name, engine, &block)
     Array(views).each { |v| super(v, name, engine, &block) }
@@ -78,6 +75,11 @@ helpers do # {{{
       h
     }.call
   end
+  # def gen_pxeboot_menu(opt)
+    # @c = opt
+    # template = File.join(settings.template_root, "boot/#{opt['bootmenu']}.erb")
+    # return ERB.new(File.read(template), nil, '-').result(binding)
+  # end
   def snippet(name, options={})
     partial(:"snippet/#{name}", options)
   end
@@ -99,43 +101,46 @@ get  '/install/:hostname' do |hn| #{{{
              end
   erb :"install/#{template}"
 end #}}}
-get '/report/:hostname/:action' do #{{{
+get  '/report/:hostname/:action' do #{{{
   Log.info "#{request.ip} #{params[:hostname]} #{params[:action]}"
 end #}}}
 post '/dhcp/:hostname/:action' do |hn,act| #{{{
   # [ act, hn ].join(" ")
-  DNSMasq.send(act,hn)
+  if %w(lock unlock).include? act
+    DNSMasq.send(act,hn)
+
+  elsif hn == 'all' and act == 'gen'
+    dnsmasq_conf = []
+    hosts_config.each do |hostname, conf|
+      next if hostname =~ /^_/
+      if conf['int']
+        mac = conf['macaddr']
+        ip = (conf['int']['eth0'] || conf['int']['vnic0'])['ip']
+        dnsmasq_conf << [mac, ip , hostname ].join(',')
+      end
+    end
+    # Log.info dnsmasq_conf.inspect
+    # dnsmasq_conf = "aa\nb\nc\n"
+    unless dnsmasq_conf.empty?
+      DNSMasq.write_conf(dnsmasq_conf)
+      DNSMasq.reload
+    end
+  end
 end # }}}
 get  '/boot/:hostname' do |hn| #{{{
-  File.read(bootfile_path_for(hn))
+  File.read(bootmenu_path_for(hn))
 end #}}}
 post '/boot/:hostname' do |hn| #{{{
   res = []
   dnsmasq_conf = []
-  configs = if hn == 'all'
-           hosts_config
-         else
-           h = {}
-           h[hn] = hosts_config[hn]
-           h
-         end
+  configs = (hn == 'all') ? hosts_config : { hn => hosts_config[hn] }
   configs.each do |hostname, conf|
     next if hostname =~ /^_/
     res << hostname
-    if conf['int']
-      mac = conf['macaddr']
-      int = conf['int']['eth0'] || conf['int']['vnic0']
-      ip  = int['ip']
-      dnsmasq_conf << [mac, ip , hostname ].join(',')
+    File.open(bootmenu_path_for(hostname), 'w') do |io|
+      @c = conf
+      io.puts erb(:"boot/#{@conf['bootmenu']}")
     end
-    File.open(bootfile_path_for(hostname), 'w') do |io|
-      io.puts gen_pxeboot_menu(conf)
-    end
-  end
-  # Log.info dnsmasq_conf.inspect
-  unless dnsmasq_conf.empty?
-    DNSMasq.write_conf(dnsmasq_conf)
-    DNSMasq.reload
   end
   res.join("\n")
 end #}}}
@@ -167,9 +172,6 @@ get  '/host/:hostname/:action' do |hostname, action| #{{{
   else
   end
 end # }}}
-get  '/dist' do
-  "A\n"
-  # Dir.glob("
-end
 get  '/debug' do #{{{
+  erb(:"boot/centos")
 end #}}}
